@@ -8,8 +8,13 @@ const playlist = await ytpl("PLpePgEi-vLu9euPlaqf1vABjBYVWBrjQp", {});
 const videos = playlist.items;
 
 let current = 0;
-const timer = setInterval(downloadVideo, 20000);
+// const timer = setInterval(downloadVideo, 20000);
+console.table(videos.map(video => ({title:video.title, duration:video.duration})));
 
+let length =0;
+videos.forEach(video => length+=video.durationSec);
+
+console.log("total of " + (length/3600).toFixed(2) + "hrs");
 downloadVideo();
 
 
@@ -23,9 +28,10 @@ function replaceValidString(str){
 
 }
 function downloadVideo() {
+
   if (current >= videos.length) {
-    clearInterval(timer);
-    process.exit();
+process.exit();
+    
   }
   if (current < videos.length) {
     console.log(current);
@@ -46,7 +52,16 @@ function downloadVideo() {
 
     //added audio and video filter, some videos don't have both, so this should fix that issue.
     try {
-      ytdl(`${videos[current].shortUrl}`, {filter:"audioandvideo"}).pipe(fs.createWriteStream(file));
+      let writeStream = fs.createWriteStream(file)
+      ytdl(`${videos[current].shortUrl}`, {filter:"audioandvideo"}).pipe(writeStream);
+
+      writeStream.on("close", () =>  {
+        console.log(`finished: ${file}`)
+        downloadVideo();
+        
+    
+    });
+      
     } catch (error) {
       fs.appendFile(
         "log.txt",
