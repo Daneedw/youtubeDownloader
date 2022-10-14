@@ -5,22 +5,28 @@ const videos = require("./videos");
 
 
 let current = 0;
-const timer = setInterval(() => {
+download();
+
+function download(){
   if (current >= videos.length) {
-    clearInterval(timer);
+    process.exit();
   }
   if (current < videos.length) {
     console.log(current);
-    let dir = `${videos[current].folder}`;
+    let dir = `NeetCode/${videos[current].folder}`;
     console.log(dir);
     console.log(`${videos[current].solution}`);
     console.log(`${videos[current].problem}.mp4`);
     if (!fs.existsSync(dir)) {
       fs.mkdirSync(dir);
     }
-    ytdl(`${videos[current].solution}`).pipe(
-      fs.createWriteStream(`${dir}/${videos[current].problem}.mp4`)
-    );
+
+    let writeStream = fs.createWriteStream(`${dir}/${videos[current].problem}.mp4`)
+    ytdl(`${videos[current].solution}`).pipe(writeStream);
+    writeStream.on("close", () =>  {
+      download();
+  
+  });
   }
   current++;
-}, 31000);
+};
