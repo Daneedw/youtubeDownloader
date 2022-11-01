@@ -3,10 +3,10 @@ import ytdl from "ytdl-core";
 
 import ytpl from "ytpl";
 //example url
-//https://www.youtube.com/playlist?list=PLpePgEi-vLu8GODHPPhud4VylnIQaIdxk
-const playlist = await ytpl("PLpePgEi-vLu9euPlaqf1vABjBYVWBrjQp", {});
-const videos = playlist.items;
 
+const playlist = await ytpl("", {});
+const videos = playlist.items;
+    
 let current = 0;
 // const timer = setInterval(downloadVideo, 20000);
 console.table(videos.map(video => ({title:video.title, duration:video.duration})));
